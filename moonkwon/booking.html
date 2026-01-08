@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Collection Slot</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .booking-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .booking-header {
+            text-align: center;
+            padding: 40px 0 20px 0;
+        }
+        
+        .booking-header h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .booking-subtitle {
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-size: 1rem;
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0 40px 0;
+            position: relative;
+        }
+        
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50px;
+            right: 50px;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px auto;
+            font-weight: 600;
+            color: #7f8c8d;
+            transition: all 0.3s;
+        }
+        
+        .step.active .step-number {
+            background: #3498db;
+            border-color: #3498db;
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        
+        .step.active .step-label {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .section-header {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            font-size: 1.2rem;
+        }
+        
+        .slot-details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .detail-item {
+            margin-bottom: 15px;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-value {
+            color: #2c3e50;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .input-hint {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+        
+        .username-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        
+        .username-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .listings-section {
+            margin-top: 20px;
+        }
+        
+        .listings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .listings-header h3 {
+            margin: 0;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 1rem;
+        }
+        
+        .select-all {
+            font-size: 0.9rem;
+            color: #3498db;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: underline;
+        }
+        
+        .select-all:hover {
+            color: #2980b9;
+        }
+        
+        .listings-container {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            min-height: 100px;
+        }
+        
+        .listing-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+        
+        .listing-item:last-child {
+            border-bottom: none;
+        }
+        
+        .listing-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .listing-checkbox {
+            margin-right: 15px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .listing-name {
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+        
+        .no-items {
+            text-align: center;
+            padding: 40px 20px;
+            color: #95a5a6;
+        }
+        
+        .no-items h3 {
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .no-items p {
+            color: #95a5a6;
+            font-size: 0.95rem;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-back {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-back:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-confirm {
+            background: #2c3e50;
+            color: white;
+        }
+        
+        .btn-confirm:hover {
+            background: #34495e;
+        }
+        
+        .btn-confirm:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            display: none;
+        }
+        
+        .message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+            display: block;
+        }
+        
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+            display: block;
+        }
+        
+        .message.info {
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #bbdefb;
+            display: block;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .slot-details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .progress-steps {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .progress-steps::before {
+                display: none;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="booking-container">
+        <div class="booking-header">
+            <h1>BOOK COLLECTION SLOT</h1>
+            <p class="booking-subtitle">confirm your meetup/self-collect booking</p>
+        </div>
+        
+        <div class="progress-steps">
+            <div class="step active">
+                <div class="step-number">1</div>
+                <div class="step-label">SLOT DETAILS</div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-label">YOUR DETAILS</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-label">CONFIRMATION</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-header">SLOT DETAILS</h2>
+            <div id="slotDetails" class="slot-details-grid">
+                <!-- Slot details will be populated here -->
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-header">YOUR DETAILS</h2>
+            
+            <div class="form-group">
+                <label for="usernameInput">USERNAME</label>
+                <input type="text" id="usernameInput" class="username-input" placeholder="@nutmeg22">
+                <div class="input-hint">must start with @</div>
+            </div>
+            
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Searching for your items...</p>
+            </div>
+            
+            <div id="listingsSection" class="listings-section" style="display: none;">
+                <div class="listings-header">
+                    <h3>ITEMS READY FOR COLLECTION</h3>
+                    <div id="selectAll" class="select-all">select all items you're collecting</div>
+                </div>
+                
+                <div id="listingsContainer" class="listings-container">
+                    <!-- Listings will be populated here -->
+                </div>
+                
+                <div id="noItems" class="no-items" style="display: none;">
+                    <h3>NO ITEMS FOUND</h3>
+                    <p>You don't have any items ready for collection.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="bookingMessage" class="message"></div>
+        
+        <div class="button-group">
+            <a href="index.html" class="btn btn-back">BACK TO DASHBOARD</a>
+            <button id="confirmBtn" class="btn btn-confirm" disabled>CONFIRM BOOKING</button>
+        </div>
+    </div>
+    
+    <script src="booking.js"></script>
+    <!-- Add this at the bottom of booking.html body -->
+<script>
+// Debug function - test Google Apps Script directly
+async function testGASConnection() {
+    console.log('Testing Google Apps Script connection...');
+    
+    const testData = {
+        username: "@testuser",
+        listings: "#testitem1, #testitem2",
+        date: "12/01/2026",
+        time: "6.30 to 6.45pm",
+        location: "paya lebar",
+        type: "meetup"
+    };
+    
+    try {
+        // Test JSONP
+        const url = 'https://script.google.com/macros/s/AKfycbwQNjVZpA1TpqrhfcL7XRKr-6UXGcueoJWde6zZBad5O2uSCDSzjETJERVmDRnzmsnQjg/exec?callback=testCallback';
+        const urlWithParams = url + '&' + new URLSearchParams(testData).toString();
+        
+        console.log('Test URL:', urlWithParams);
+        
+        // Create test button in console
+        console.log('%c Test Booking Data:', 'color: blue; font-weight: bold', testData);
+        console.log('%c Copy this to test in Apps Script Editor:', 'color: green');
+        console.log(JSON.stringify(testData, null, 2));
+        
+    } catch (error) {
+        console.error('Test failed:', error);
+    }
+}
+
+// Run test on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Debug mode active');
+    console.log('Run testGASConnection() to test the API');
+    window.testGASConnection = testGASConnection;
+});
+</script>
+</body>
+</html>

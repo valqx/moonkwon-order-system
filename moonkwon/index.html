@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Status Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>moonkwon multiverse order status</h1>
+            <p class="subtitle">search for the status of items & payment</p>
+            <div id="lastUpdated"></div>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab active" data-tab="search">search orders</button>
+            <button class="tab" data-tab="listings">all listings</button>
+            <button class="tab" data-tab="meetup">meetup/self collection slots</button>
+        </div>
+        
+        <div id="searchTab" class="tab-content active">
+            <div class="search-section">
+                <div class="search-box">
+                    <input type="text" id="usernameInput" placeholder="@username" autocomplete="off">
+                    <button id="searchBtn">search orders</button>
+                </div>
+                <div id="message" class="message info">enter your username starting with @</div>
+            </div>
+            
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>loading data...</p>
+            </div>
+            
+            <div id="resultsContainer" class="results-container">
+                <h2 id="resultsTitle" style="color: #2c3e50; margin-bottom: 20px;"></h2>
+                <table class="results-table" id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th width="12%">Listing</th>
+                            <th width="12%">Username</th>
+                            <th width="25%">Order Details</th>
+                            <th width="8%">FP</th>
+                            <th width="8%">SP</th>
+                            <th width="8%">NM</th>
+                            <th width="10%">Status</th>
+                            <th width="17%">Deadline</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="listingsTab" class="tab-content">
+            <h2 style="color: #2c3e50; margin-bottom: 20px; text-align: center;">all listings status summary</h2>
+            <div id="listingsLoading" class="loading">
+                <div class="spinner"></div>
+                <p>loading listings data...</p>
+            </div>
+            <table class="summary-table" id="summaryTable">
+                <thead>
+                    <tr>
+                        <th width="60%">Listing</th>
+                        <th width="40%">Status</th> 
+                    </tr>
+                </thead>
+                <tbody id="summaryBody"></tbody>
+            </table>
+        </div>
+        
+        <div id="meetupTab" class="tab-content">
+            <div class="meetup-header">
+                <h2 style="color: #2c3e50; text-align: center;">meetup/self collect slots</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                    check the following collection slots and select when you wish to collect your items
+                </p>
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <span id="slotStatusMessage" style="padding: 5px 10px; border-radius: 4px; font-size: 0.9rem; display: none;"></span>
+                </div>
+            </div>
+            
+            <div id="meetupInfo" class="instructions-box">
+                <h3 style="color: #2c3e50; margin-top: 0;">important instructions!</h3>
+                <ul>
+                    <li><strong>* small items only!</strong> no bulky misc/merch/heavy albums</li>
+                    <li><strong>** strictly collect your items before the concert,</strong> extra $5 fee will incur if collection is after concert</li>
+                    <li><strong>late arrival fee</strong> - $2 late fee if late without prior notice</li>
+                    <li><strong>cancellation fee</strong> - $2 cancellation fee for last minute cancellation or MIA 2 hours before meetup/self collect time</li>
+                    <li><strong>slots will close by 11pm</strong> the day before each meetup/self collect slot</li>
+                </ul>
+                <p>do ensure to bring your own carrier bag upon collection</p>
+                <p>further enquires do pm <strong>@moonkwonadmins</strong> on tele</p>
+            </div>
+            
+            <div id="meetupLoading" class="loading">
+                <div class="spinner"></div>
+                <p>loading meetup slots...</p>
+            </div>
+            
+            <div class="meetup-section">
+                <h3 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">meetups</h3>
+                <table class="meetup-table">
+                    <thead>
+                        <tr>
+                            <th width="25%">date</th>
+                            <th width="30%">location</th>
+                            <th width="25%">time</th>
+                            <th width="20%">action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="meetupSlotsBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="meetup-section" style="margin-top: 30px;">
+                <h3 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">self collect</h3>
+                <table class="meetup-table">
+                    <thead>
+                        <tr>
+                            <th width="25%">date</th>
+                            <th width="30%">location</th>
+                            <th width="25%">time</th>
+                            <th width="20%">action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="selfcollectSlotsBody"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <h3>status Legend</h3>
+            <div class="legend-grid">
+                <div class="legend-item"><div class="legend-color" style="background-color: #fce5cd;"></div><span>ordered</span></div>
+                <div class="legend-item"><div class="legend-color" style="background-color: #ea9999;"></div><span>unpaid</span></div>
+                <div class="legend-item"><div class="legend-color" style="background-color: #d9ead3;"></div><span>at kadd</span></div>
+                <div class="legend-item"><div class="legend-color" style="background-color: #b7e1cd;"></div><span>paid</span></div>
+                <div class="legend-item"><div class="legend-color" style="background-color: #ffe599;"></div><span>otw to sg</span></div>
+                <div class="legend-item"><div class="legend-color" style="background-color: #c9daf8;"></div><span>at cadd</span></div>
+                <div class="legend-item"><div class="legend-color" style="background-color: #f4cccc;"></div><span>ready for collection</span></div>
+                <div class="legend-item"><div class="legend-color" style="background-color: #b4a7d6;"></div><span>at jadd</span></div>
+                <div class="legend-item"><div class="legend-color" style="background-color: #d2e9ff;"></div><span>collected</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+    // Override the displayMeetupSlots function to respect individual slot settings
+    document.addEventListener('DOMContentLoaded', function() {
+        // Store the original function
+        const originalDisplayMeetupSlots = window.displayMeetupSlots;
+        
+        // Override with new function
+        window.displayMeetupSlots = function() {
+            if (typeof originalDisplayMeetupSlots === 'function') {
+                originalDisplayMeetupSlots();
+            }
+            
+            // Apply individual slot settings after slots are loaded
+            setTimeout(applyIndividualSlotSettings, 300);
+        };
+        
+        // Function to apply individual slot settings
+        function applyIndividualSlotSettings() {
+            const slotSettings = JSON.parse(localStorage.getItem('slot_settings') || '{}');
+            const allSlotSettings = JSON.parse(localStorage.getItem('all_slot_settings') || '{}');
+            const slotStatusMessage = document.getElementById('slotStatusMessage');
+            
+            let disabledSlotsCount = 0;
+            let totalSlotsCount = 0;
+            
+            // Process all book slot buttons
+            const allBookButtons = document.querySelectorAll('.book-slot-btn');
+            
+            allBookButtons.forEach(button => {
+                totalSlotsCount++;
+                
+                // Get slot ID from href or generate one
+                let slotId = button.getAttribute('data-slot-id');
+                if (!slotId) {
+                    // Generate a consistent ID from the slot data
+                    const row = button.closest('tr');
+                    if (row) {
+                        const date = row.cells[0]?.textContent || '';
+                        const location = row.cells[1]?.textContent || '';
+                        const time = row.cells[2]?.textContent || '';
+                        slotId = `slot_${date.replace(/\//g, '')}_${location.replace(/\s+/g, '_')}_${time.replace(/\s+/g, '_')}`;
+                        button.setAttribute('data-slot-id', slotId);
+                    }
+                }
+                
+                // Check if this specific slot is disabled
+                if (slotId && (slotSettings[slotId] === false || allSlotSettings[slotId] === false)) {
+                    button.style.display = 'none'; // Hide completely
+                    disabledSlotsCount++;
+                } else {
+                    button.style.display = 'inline-block'; // Show
+                }
+            });
+            
+            // Show status message if any slots are disabled
+            if (slotStatusMessage) {
+                if (disabledSlotsCount > 0) {
+                    const enabledSlots = totalSlotsCount - disabledSlotsCount;
+                    slotStatusMessage.textContent = `⚠️ ${disabledSlotsCount} slot(s) currently disabled (${enabledSlots} available)`;
+                    slotStatusMessage.style.background = '#fff3cd';
+                    slotStatusMessage.style.color = '#856404';
+                    slotStatusMessage.style.display = 'inline-block';
+                } else {
+                    slotStatusMessage.style.display = 'none';
+                }
+            }
+        }
+        
+        // Apply settings when meetup tab is clicked
+        document.querySelector('.tab[data-tab="meetup"]')?.addEventListener('click', function() {
+            setTimeout(applyIndividualSlotSettings, 500);
+        });
+        
+        // Also check on page load in case slots are already loaded
+        setTimeout(applyIndividualSlotSettings, 1000);
+    });
+    </script>
+</body>
+</html>

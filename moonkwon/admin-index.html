@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Controls - MoonKwon Order System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Admin-specific styles */
+        .admin-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #4a6491 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px 15px 0 0;
+            margin-bottom: 0;
+            text-align: center;
+        }
+        
+        .admin-header h1 {
+            margin: 0;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .admin-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        .back-btn:hover {
+            background: #2980b9;
+        }
+        
+        /* Control styles */
+        .control-container {
+            background: white;
+            border-radius: 0 0 15px 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .control-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .control-section h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .control-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .control-card h4 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .toggle-control {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        
+        .toggle-control:hover {
+            background: #e9ecef;
+        }
+        
+        .toggle-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .toggle-description {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #27ae60;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+        
+        /* Button styles */
+        .admin-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        
+        .admin-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .admin-btn.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .admin-btn.success {
+            background: linear-gradient(135deg, #27ae60, #219653);
+        }
+        
+        .admin-btn.warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        
+        /* Status indicators */
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-active {
+            background: #27ae60;
+        }
+        
+        .status-inactive {
+            background: #e74c3c;
+        }
+        
+        /* Individual slot controls */
+        .slot-control-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        
+        .slot-control-item:hover {
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .slot-info {
+            flex: 1;
+        }
+        
+        .slot-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .slot-date {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        
+        .slot-type-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .meetup-badge {
+            background: #3498db;
+            color: white;
+        }
+        
+        .selfcollect-badge {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .slot-details {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .slot-details span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .slot-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        /* Bookings table */
+        .bookings-table-container {
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        
+        .bookings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .bookings-table th {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .bookings-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .bookings-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .booking-id {
+            font-family: monospace;
+            background: #f0f0f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .view-btn {
+            background: #3498db;
+            color: white;
+        }
+        
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        /* Stats cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Filter controls */
+        .filter-bar {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-bar input, .filter-bar select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        /* No data message */
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        .no-data i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #bdc3c7;
+        }
+        
+        /* Message alerts */
+        .admin-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .admin-message.error {
+            background: #e74c3c;
+        }
+        
+        .admin-message.warning {
+            background: #f39c12;
+        }
+        
+        /* Bulk controls */
+        .bulk-controls {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .bulk-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .bulk-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .bulk-enable {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .bulk-disable {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .bulk-reset {
+            background: #f39c12;
+            color: white;
+        }
+        
+        /* Search slots */
+        .slot-search {
+            margin-bottom: 20px;
+        }
+        
+        .slot-search input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        /* Loading state */
+        .loading-slots {
+            text-align: center;
+            padding: 30px;
+            color: #7f8c8d;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Back button -->
+    <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Main
+    </a>
+    
+    <!-- Admin message -->
+    <div id="adminMessage" class="admin-message"></div>
+    
+    <div class="container">
+        <div class="admin-header">
+            <h1>
+                <i class="fas fa-shield-alt"></i>
+                Admin Control Panel
+                <span class="admin-badge">ADMIN</span>
+            </h1>
+            <p style="margin-top: 10px; opacity: 0.9;">Manage individual slots and view all bookings</p>
+        </div>
+        
+        <div class="control-container">
+            <!-- Individual Slot Control Section -->
+            <div class="control-section">
+                <h3><i class="fas fa-calendar-check"></i> Individual Slot Controls</h3>
+                
+                <div class="slot-search">
+                    <input type="text" id="slotSearchInput" placeholder="Search slots by date, location, or time..." 
+                           onkeyup="searchSlots()">
+                </div>
+                
+                <!-- Bulk controls -->
+                <div class="bulk-controls">
+                    <div style="font-weight: 600; color: #2c3e50; margin-bottom: 10px;">Bulk Actions:</div>
+                    <div class="bulk-buttons">
+                        <button class="bulk-btn bulk-enable" onclick="enableAllSlots()">
+                            <i class="fas fa-check-circle"></i> Enable All Slots
+                        </button>
+                        <button class="bulk-btn bulk-disable" onclick="disableAllSlots()">
+                            <i class="fas fa-times-circle"></i> Disable All Slots
+                        </button>
+                        <button class="bulk-btn bulk-reset" onclick="resetSlotSettings()">
+                            <i class="fas fa-undo"></i> Reset All Settings
+                        </button>
+                        <button class="admin-btn" onclick="loadMeetupSlots()" style="margin-left: auto; padding: 8px 15px;">
+                            <i class="fas fa-sync-alt"></i> Refresh Slots from Google Sheet
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Loading state -->
+                <div id="slotsLoading" class="loading-slots" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>Loading meetup slots from Google Sheet...</p>
+                </div>
+                
+                <!-- Slots will be loaded here -->
+                <div id="slotControlsContainer">
+                    <div class="no-data">
+                        <i class="fas fa-calendar-plus"></i>
+                        <h3>No Slots Loaded</h3>
+                        <p>Click the button above to load slots from Google Sheet</p>
+                    </div>
+                </div>
+                
+                <div id="noSlotsMessage" class="no-data" style="display: none;">
+                    <i class="fas fa-calendar-times"></i>
+                    <h3>No Slots Found</h3>
+                    <p>No meetup slots available in the Google Sheet.</p>
+                    <button class="admin-btn" onclick="loadMeetupSlots()" style="margin-top: 15px;">
+                        <i class="fas fa-sync-alt"></i> Try Again
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Bookings Management Section -->
+            <div class="control-section">
+                <h3><i class="fas fa-calendar-alt"></i> Bookings Management</h3>
+                
+                <!-- Stats -->
+                <div class="stats-grid" id="bookingStats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="statTotalBookings">0</div>
+                        <div class="stat-label">Total Bookings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statTodayBookings">0</div>
+                        <div class="stat-label">Today's Bookings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statMeetupBookings">0</div>
+                        <div class="stat-label">Meetup Bookings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statSelfcollectBookings">0</div>
+                        <div class="stat-label">Self-Collect</div>
+                    </div>
+                </div>
+                
+                <!-- Action buttons -->
+                <div style="text-align: center; margin: 25px 0;">
+                    <button class="admin-btn" onclick="refreshBookings()">
+                        <i class="fas fa-sync-alt"></i> Refresh Bookings
+                    </button>
+                    <button class="admin-btn success" onclick="exportBookingsCSV()">
+                        <i class="fas fa-download"></i> Export CSV
+                    </button>
+                    <button class="admin-btn warning" onclick="exportBookingsJSON()">
+                        <i class="fas fa-file-code"></i> Export JSON
+                    </button>
+                    <button class="admin-btn danger" onclick="clearAllBookingsConfirm()">
+                        <i class="fas fa-trash-alt"></i> Clear All
+                    </button>
+                </div>
+                
+                <!-- Filter bar -->
+                <div class="filter-bar">
+                    <input type="text" id="bookingSearch" placeholder="Search by username or listing..." 
+                           onkeyup="filterBookings()">
+                    <select id="bookingTypeFilter" onchange="filterBookings()">
+                        <option value="">All Types</option>
+                        <option value="meetup">Meetup</option>
+                        <option value="selfcollect">Self Collect</option>
+                    </select>
+                    <select id="bookingDateFilter" onchange="filterBookings()">
+                        <option value="">All Dates</option>
+                    </select>
+                    <button class="admin-btn" onclick="clearBookingFilters()">
+                        <i class="fas fa-times"></i> Clear Filters
+                    </button>
+                </div>
+                
+                <!-- Bookings table -->
+                <div id="bookingsTableContainer">
+                    <div class="bookings-table-container">
+                        <table class="bookings-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Date & Time</th>
+                                    <th>Username</th>
+                                    <th>Listings</th>
+                                    <th>Location</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookingsTableBody">
+                                <!-- Bookings will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- No bookings message -->
+                <div id="noBookingsMessage" class="no-data" style="display: none;">
+                    <i class="fas fa-calendar-times"></i>
+                    <h3>No Bookings Found</h3>
+                    <p>No booking records available yet.</p>
+                    <button class="admin-btn" onclick="refreshBookings()" style="margin-top: 15px;">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ==================== CONFIGURATION (same as app.js) ====================
+    const CONFIG = {
+        MEETUP_SHEET_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNOxQuuN40JVvEnEwZ7ERRaUzYwOm751xtw_aB3ZrIIoM_iWquXWPGJNloTNOoKjxoLUBcDGVmSboa/pub?gid=583970895&single=true&output=csv",
+        MEETUP_COLUMNS: {
+            DATE: 0,
+            LOCATION: 1,
+            TIME: 2,
+            TYPE: 3,
+            SLOTS: 4
+        }
+    };
+    
+    // ==================== SLOT MANAGEMENT ====================
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🔧 Admin panel initializing...');
+        
+        // Load slots and bookings
+        loadMeetupSlots();
+        refreshBookings();
+        
+        // Setup event listeners
+        setupAdminEventListeners();
+    });
+    
+    // Store loaded slots data
+    let loadedSlots = [];
+    
+    // Enhanced CSV parser (same as app.js)
+    function parseCSV(text) {
+        const rows = [];
+        if (!text || text.trim() === '') return rows;
+        
+        const lines = text.split(/\r?\n/);
+        let currentLine = '';
+        let inQuotes = false;
+        
+        // Handle multi-line quoted values
+        for (let line of lines) {
+            if (line.trim() === '' && !inQuotes) continue;
+            
+            // Count quotes in line
+            const quoteCount = (line.match(/"/g) || []).length;
+            
+            if (inQuotes) {
+                currentLine += '\n' + line;
+                if (quoteCount % 2 !== 0) { // Odd number of quotes means we're closing a quoted section
+                    inQuotes = false;
+                }
+            } else {
+                currentLine = line;
+                if (quoteCount % 2 !== 0) { // Odd number of quotes means we're opening a quoted section
+                    inQuotes = true;
+                    continue;
+                }
+            }
+            
+            if (!inQuotes && currentLine.trim() !== '') {
+                const row = parseCSVLine(currentLine);
+                if (row.length > 0) rows.push(row);
+                currentLine = '';
+            }
+        }
+        
+        // Handle any remaining content
+        if (currentLine.trim() !== '') {
+            const row = parseCSVLine(currentLine);
+            if (row.length > 0) rows.push(row);
+        }
+        
+        return rows;
+    }
+    
+    function parseCSVLine(line) {
+        const row = [];
+        let currentField = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            
+            if (char === '"') {
+                if (inQuotes && line[i + 1] === '"') {
+                    // Escaped quote
+                    currentField += '"';
+                    i++;
+                } else {
+                    // Start or end of quoted field
+                    inQuotes = !inQuotes;
+                }
+            } else if (char === ',' && !inQuotes) {
+                row.push(currentField.trim());
+                currentField = '';
+            } else {
+                currentField += char;
+            }
+        }
+        
+        // Add the last field
+        row.push(currentField.trim());
+        
+        return row;
+    }
+    
+    // Fetch meetup data from Google Sheet
+    async function fetchMeetupData() {
+        const proxies = [
+            'https://api.allorigins.win/raw?url=',
+            'https://corsproxy.io/?',
+            'https://api.codetabs.com/v1/proxy?quest='
+        ];
+        
+        const cacheBuster = "&t=" + new Date().getTime();
+        const finalUrl = CONFIG.MEETUP_SHEET_URL + cacheBuster;
+        
+        // Try direct fetch first
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            
+            const directResponse = await fetch(finalUrl, {
+                signal: controller.signal,
+                headers: {
+                    'Accept': 'text/csv',
+                    'Cache-Control': 'no-cache'
+                }
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (directResponse.ok) {
+                return await directResponse.text();
+            }
+        } catch (directError) {
+            console.log('Direct fetch failed, trying proxies...');
+        }
+        
+        // Try each proxy
+        for (const proxy of proxies) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
+                const proxyUrl = proxy + encodeURIComponent(finalUrl);
+                const response = await fetch(proxyUrl, {
+                    signal: controller.signal,
+                    headers: {
+                        'Accept': 'text/csv',
+                        'Cache-Control': 'no-cache'
+                    }
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    const text = await response.text();
+                    // Check if the response is valid CSV
+                    if (text && text.includes(',')) {
+                        return text;
+                    }
+                }
+            } catch (proxyError) {
+                console.log(`Proxy ${proxy} failed:`, proxyError);
+                continue;
+            }
+        }
+        
+        throw new Error('All fetch attempts failed for meetup data');
+    }
+    
+    async function loadMeetupSlots() {
+        console.log('📅 Loading meetup slots from Google Sheet...');
+        
+        // Show loading state
+        document.getElementById('slotsLoading').style.display = 'block';
+        document.getElementById('slotControlsContainer').innerHTML = '';
+        document.getElementById('noSlotsMessage').style.display = 'none';
+        
+        try {
+            // Fetch data from Google Sheet
+            const csvText = await fetchMeetupData();
+            
+            if (!csvText || csvText.trim() === '') {
+                throw new Error('Received empty meetup data');
+            }
+            
+            // Parse CSV data
+            const parsedData = parseCSV(csvText);
+            
+            if (parsedData.length <= 1) {
+                throw new Error('No meetup slots found in spreadsheet');
+            }
+            
+            // Process slots (skip header row)
+            const slots = parsedData.slice(1);
+            const processedSlots = [];
+            
+            slots.forEach((slot, index) => {
+                if (!slot || slot.length < 3) return;
+                
+                const date = slot[CONFIG.MEETUP_COLUMNS.DATE] || '';
+                const location = slot[CONFIG.MEETUP_COLUMNS.LOCATION] || '';
+                const time = slot[CONFIG.MEETUP_COLUMNS.TIME] || '';
+                const type = (slot[CONFIG.MEETUP_COLUMNS.TYPE] || '').toLowerCase().trim();
+                
+                if (!date || !location || !time) return;
+                
+                // Generate unique slot ID
+                const slotId = `slot_${date.replace(/\//g, '')}_${location.replace(/\s+/g, '_')}_${time.replace(/\s+/g, '_')}`;
+                
+                // Determine slot type
+                const isMeetup = type.includes('meetup');
+                const isSelfcollect = type.includes('self collect') || type.includes('self-collect') || type.includes('self');
+                
+                // Create slot object
+                const slotObj = {
+                    id: slotId,
+                    date: date,
+                    location: location,
+                    time: time,
+                    type: isMeetup ? 'meetup' : 'selfcollect',
+                    originalType: type,
+                    slotsCount: slot[CONFIG.MEETUP_COLUMNS.SLOTS] || '',
+                    enabled: true,
+                    index: index
+                };
+                
+                processedSlots.push(slotObj);
+            });
+            
+            if (processedSlots.length === 0) {
+                throw new Error('No valid meetup slots found');
+            }
+            
+            // Load saved settings
+            const slotSettings = JSON.parse(localStorage.getItem('slot_settings') || '{}');
+            const allSlotSettings = JSON.parse(localStorage.getItem('all_slot_settings') || '{}');
+            
+            // Apply saved settings to slots
+            processedSlots.forEach(slot => {
+                if (slotSettings[slot.id] !== undefined) {
+                    slot.enabled = slotSettings[slot.id];
+                } else if (allSlotSettings[slot.id] !== undefined) {
+                    slot.enabled = allSlotSettings[slot.id];
+                }
+            });
+            
+            // Save to localStorage and global variable
+            loadedSlots = processedSlots;
+            localStorage.setItem('admin_slots_data', JSON.stringify(processedSlots));
+            
+            // Display slots
+            displaySlotControls(processedSlots, slotSettings);
+            
+            // Hide loading state
+            document.getElementById('slotsLoading').style.display = 'none';
+            
+            showAdminMessage(`Loaded ${processedSlots.length} slots from Google Sheet`, 'success');
+            console.log(`✅ Loaded ${processedSlots.length} slots:`, processedSlots);
+            
+        } catch (error) {
+            console.error('❌ Error loading meetup slots:', error);
+            
+            // Hide loading state
+            document.getElementById('slotsLoading').style.display = 'none';
+            document.getElementById('noSlotsMessage').style.display = 'block';
+            document.getElementById('slotControlsContainer').innerHTML = '';
+            
+            showAdminMessage(`Error: ${error.message}`, 'error');
+        }
+    }
+    
+    function displaySlotControls(slots, settings) {
+        const container = document.getElementById('slotControlsContainer');
+        const noSlotsDiv = document.getElementById('noSlotsMessage');
+        
+        if (!slots || slots.length === 0) {
+            if (noSlotsDiv) noSlotsDiv.style.display = 'block';
+            if (container) container.innerHTML = '';
+            return;
+        }
+        
+        if (noSlotsDiv) noSlotsDiv.style.display = 'none';
+        
+        // Sort slots: meetups first, then self-collect, then by date
+        slots.sort((a, b) => {
+            // Group by type (meetup first)
+            if (a.type !== b.type) {
+                return a.type === 'meetup' ? -1 : 1;
+            }
+            // Then by date
+            return a.date.localeCompare(b.date);
+        });
+        
+        let html = '';
+        
+        slots.forEach(slot => {
+            const isEnabled = settings[slot.id] !== false; // Default to true if not set
+            const isMeetup = slot.type === 'meetup';
+            
+            html += `
+                <div class="slot-control-item" data-slot-id="${slot.id}">
+                    <div class="slot-info">
+                        <div class="slot-header">
+                            <div class="slot-date">${slot.date}</div>
+                            <span class="slot-type-badge ${isMeetup ? 'meetup-badge' : 'selfcollect-badge'}">
+                                ${isMeetup ? 'MEETUP' : 'SELF-COLLECT'}
+                            </span>
+                        </div>
+                        <div class="slot-details">
+                            <span><i class="fas fa-map-marker-alt"></i> ${slot.location}</span>
+                            <span><i class="fas fa-clock"></i> ${slot.time}</span>
+                            <span class="status-indicator ${isEnabled ? 'status-active' : 'status-inactive'}"></span>
+                            <span style="color: ${isEnabled ? '#27ae60' : '#e74c3c'}; font-weight: 600;">
+                                ${isEnabled ? 'Enabled' : 'Disabled'}
+                            </span>
+                            ${slot.slotsCount ? `<span><i class="fas fa-users"></i> ${slot.slotsCount} slots</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="slot-actions">
+                        <label class="toggle-switch">
+                            <input type="checkbox" ${isEnabled ? 'checked' : ''} 
+                                   onchange="toggleIndividualSlot('${slot.id}', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            `;
+        });
+        
+        if (container) container.innerHTML = html;
+    }
+    
+    function toggleIndividualSlot(slotId, enabled) {
+        const slotSettings = JSON.parse(localStorage.getItem('slot_settings') || '{}');
+        slotSettings[slotId] = enabled;
+        
+        // Also update all_slot_settings for backward compatibility
+        const allSlotSettings = JSON.parse(localStorage.getItem('all_slot_settings') || '{}');
+        allSlotSettings[slotId] = enabled;
+        
+        localStorage.setItem('slot_settings', JSON.stringify(slotSettings));
+        localStorage.setItem('all_slot_settings', JSON.stringify(allSlotSettings));
+        
+        // Update the slot in loadedSlots
+        const slotIndex = loadedSlots.findIndex(slot => slot.id === slotId);
+        if (slotIndex !== -1) {
+            loadedSlots[slotIndex].enabled = enabled;
+            localStorage.setItem('admin_slots_data', JSON.stringify(loadedSlots));
+        }
+        
+        // Update UI
+        const slotElement = document.querySelector(`[data-slot-id="${slotId}"]`);
+        if (slotElement) {
+            const statusIndicator = slotElement.querySelector('.status-indicator');
+            const statusText = slotElement.querySelector('.slot-details span:nth-child(4)');
+            
+            if (statusIndicator) {
+                statusIndicator.className = `status-indicator ${enabled ? 'status-active' : 'status-inactive'}`;
+            }
+            
+            if (statusText) {
+                statusText.textContent = enabled ? 'Enabled' : 'Disabled';
+                statusText.style.color = enabled ? '#27ae60' : '#e74c3c';
+            }
+        }
+        
+        showAdminMessage(`Slot ${enabled ? 'enabled' : 'disabled'} successfully`, 'success');
+        console.log(`Slot ${slotId} ${enabled ? 'enabled' : 'disabled'}`);
+    }
+    
+    function enableAllSlots() {
+        if (!loadedSlots.length) {
+            showAdminMessage('No slots loaded. Please load slots first.', 'error');
+            return;
+        }
+        
+        if (!confirm('Enable ALL slots?')) return;
+        
+        const slotSettings = {};
+        const allSlotSettings = {};
+        
+        loadedSlots.forEach(slot => {
+            slotSettings[slot.id] = true;
+            allSlotSettings[slot.id] = true;
+            slot.enabled = true;
+        });
+        
+        localStorage.setItem('slot_settings', JSON.stringify(slotSettings));
+        localStorage.setItem('all_slot_settings', JSON.stringify(allSlotSettings));
+        localStorage.setItem('admin_slots_data', JSON.stringify(loadedSlots));
+        
+        // Refresh display
+        displaySlotControls(loadedSlots, slotSettings);
+        showAdminMessage('All slots enabled', 'success');
+    }
+    
+    function disableAllSlots() {
+        if (!loadedSlots.length) {
+            showAdminMessage('No slots loaded. Please load slots first.', 'error');
+            return;
+        }
+        
+        if (!confirm('Disable ALL slots?')) return;
+        
+        const slotSettings = {};
+        const allSlotSettings = {};
+        
+        loadedSlots.forEach(slot => {
+            slotSettings[slot.id] = false;
+            allSlotSettings[slot.id] = false;
+            slot.enabled = false;
+        });
+        
+        localStorage.setItem('slot_settings', JSON.stringify(slotSettings));
+        localStorage.setItem('all_slot_settings', JSON.stringify(allSlotSettings));
+        localStorage.setItem('admin_slots_data', JSON.stringify(loadedSlots));
+        
+        // Refresh display
+        displaySlotControls(loadedSlots, slotSettings);
+        showAdminMessage('All slots disabled', 'success');
+    }
+    
+    function resetSlotSettings() {
+        if (!confirm('Reset ALL slot settings to default (enabled)?')) return;
+        
+        localStorage.removeItem('slot_settings');
+        localStorage.removeItem('all_slot_settings');
+        
+        // Reset loaded slots to enabled
+        if (loadedSlots.length) {
+            loadedSlots.forEach(slot => {
+                slot.enabled = true;
+            });
+            localStorage.setItem('admin_slots_data', JSON.stringify(loadedSlots));
+            
+            // Refresh display
+            displaySlotControls(loadedSlots, {});
+            showAdminMessage('All slot settings reset to default', 'success');
+        } else {
+            showAdminMessage('No slots to reset. Load slots first.', 'warning');
+        }
+    }
+    
+    function searchSlots() {
+        const searchTerm = document.getElementById('slotSearchInput').value.toLowerCase();
+        const slotItems = document.querySelectorAll('.slot-control-item');
+        
+        if (!searchTerm) {
+            // Show all if search is empty
+            slotItems.forEach(item => {
+                item.style.display = 'flex';
+            });
+            return;
+        }
+        
+        slotItems.forEach(item => {
+            const slotText = item.textContent.toLowerCase();
+            if (slotText.includes(searchTerm)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+    
+    // ==================== BOOKINGS MANAGEMENT ====================
+    function refreshBookings() {
+        const bookings = JSON.parse(localStorage.getItem('all_bookings') || '[]');
+        displayBookings(bookings);
+        updateBookingStats(bookings);
+        showAdminMessage('Bookings refreshed', 'success');
+    }
+    
+    function displayBookings(bookings) {
+        const tbody = document.getElementById('bookingsTableBody');
+        const noDataDiv = document.getElementById('noBookingsMessage');
+        const tableContainer = document.getElementById('bookingsTableContainer');
+        
+        if (!bookings || bookings.length === 0) {
+            if (tbody) tbody.innerHTML = '';
+            if (noDataDiv) noDataDiv.style.display = 'block';
+            if (tableContainer) tableContainer.style.display = 'none';
+            return;
+        }
+        
+        if (noDataDiv) noDataDiv.style.display = 'none';
+        if (tableContainer) tableContainer.style.display = 'block';
+        
+        // Sort by date (newest first)
+        bookings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        let html = '';
+        bookings.forEach(booking => {
+            const date = new Date(booking.timestamp);
+            const dateStr = date.toLocaleDateString('en-GB');
+            const timeStr = date.toLocaleTimeString('en-GB', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            // Shorten listings if too long
+            const listings = booking.listings || '';
+            const shortListings = listings.length > 50 
+                ? listings.substring(0, 50) + '...' 
+                : listings;
+            
+            // Determine type indicator
+            const type = booking.type || '';
+            const isMeetup = type.toLowerCase().includes('meetup');
+            
+            html += `
+                <tr>
+                    <td><span class="booking-id">${booking.id || 'N/A'}</span></td>
+                    <td>
+                        <div><strong>${booking.date || 'N/A'}</strong> ${booking.time || ''}</div>
+                        <div style="font-size: 0.85rem; color: #7f8c8d;">${dateStr} ${timeStr}</div>
+                    </td>
+                    <td><strong>${booking.username || 'N/A'}</strong></td>
+                    <td title="${listings}">${shortListings}</td>
+                    <td>${booking.location || 'N/A'}</td>
+                    <td>
+                        <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; 
+                               background: ${isMeetup ? '#3498db' : '#27ae60'}; margin-right: 8px;"></span>
+                        ${type}
+                    </td>
+                    <td>
+                        <span style="background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
+                            Confirmed
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn view-btn" onclick="viewBooking('${booking.id}')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deleteBooking('${booking.id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        if (tbody) tbody.innerHTML = html;
+        
+        // Populate date filter
+        populateDateFilter(bookings);
+    }
+    
+    function updateBookingStats(bookings) {
+        const today = new Date();
+        const todayStr = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`;
+        
+        const totalBookings = bookings.length;
+        const todayBookings = bookings.filter(b => b.date === todayStr).length;
+        const meetupBookings = bookings.filter(b => b.type && b.type.toLowerCase().includes('meetup')).length;
+        const selfcollectBookings = bookings.filter(b => b.type && b.type.toLowerCase().includes('self')).length;
+        
+        document.getElementById('statTotalBookings').textContent = totalBookings;
+        document.getElementById('statTodayBookings').textContent = todayBookings;
+        document.getElementById('statMeetupBookings').textContent = meetupBookings;
+        document.getElementById('statSelfcollectBookings').textContent = selfcollectBookings;
+    }
+    
+    function viewBooking(bookingId) {
+        const bookings = JSON.parse(localStorage.getItem('all_bookings') || '[]');
+        const booking = bookings.find(b => b.id === bookingId);
+        
+        if (!booking) {
+            showAdminMessage('Booking not found', 'error');
+            return;
+        }
+        
+        const date = new Date(booking.timestamp);
+        const details = `
+📋 BOOKING DETAILS
+
+🔸 ID: ${booking.id}
+🔸 Username: ${booking.username}
+🔸 Date: ${booking.date}
+🔸 Time: ${booking.time}
+🔸 Location: ${booking.location}
+🔸 Type: ${booking.type}
+🔸 Listings: ${booking.listings}
+🔸 Created: ${date.toLocaleString()}
+🔸 Status: ${booking.status}
+
+📊 STORAGE INFO
+🔸 Total bookings in system: ${bookings.length}
+        `;
+        
+        alert(details);
+    }
+    
+    function deleteBooking(bookingId) {
+        if (!confirm('Are you sure you want to delete this booking?')) return;
+        
+        const bookings = JSON.parse(localStorage.getItem('all_bookings') || '[]');
+        const updatedBookings = bookings.filter(b => b.id !== bookingId);
+        
+        localStorage.setItem('all_bookings', JSON.stringify(updatedBookings));
+        refreshBookings();
+        showAdminMessage('Booking deleted successfully', 'success');
+    }
+    
+    function clearAllBookingsConfirm() {
+        if (!confirm('⚠️ WARNING: This will delete ALL bookings permanently!\n\nAre you absolutely sure?')) {
+            return;
+        }
+        
+        localStorage.removeItem('all_bookings');
+        refreshBookings();
+        showAdminMessage('All bookings cleared', 'success');
+    }
+    
+    function filterBookings() {
+        const searchTerm = document.getElementById('bookingSearch').value.toLowerCase();
+        const typeFilter = document.getElementById('bookingTypeFilter').value;
+        const dateFilter = document.getElementById('bookingDateFilter').value;
+        
+        const allBookings = JSON.parse(localStorage.getItem('all_bookings') || '[]');
+        
+        const filtered = allBookings.filter(booking => {
+            // Search term
+            if (searchTerm) {
+                const inUsername = booking.username?.toLowerCase().includes(searchTerm);
+                const inListings = booking.listings?.toLowerCase().includes(searchTerm);
+                if (!inUsername && !inListings) return false;
+            }
+            
+            // Type filter
+            if (typeFilter) {
+                if (typeFilter === 'meetup') {
+                    if (!booking.type?.toLowerCase().includes('meetup')) return false;
+                } else if (typeFilter === 'selfcollect') {
+                    if (!booking.type?.toLowerCase().includes('self')) return false;
+                }
+            }
+            
+            // Date filter
+            if (dateFilter && booking.date !== dateFilter) {
+                return false;
+            }
+            
+            return true;
+        });
+        
+        displayBookings(filtered);
+    }
+    
+    function clearBookingFilters() {
+        document.getElementById('bookingSearch').value = '';
+        document.getElementById('bookingTypeFilter').value = '';
+        document.getElementById('bookingDateFilter').value = '';
+        refreshBookings();
+    }
+    
+    function populateDateFilter(bookings) {
+        const dateFilter = document.getElementById('bookingDateFilter');
+        if (!dateFilter) return;
+        
+        // Clear existing options (keep first "All Dates")
+        while (dateFilter.options.length > 1) {
+            dateFilter.remove(1);
+        }
+        
+        // Get unique dates
+        const dates = [...new Set(bookings.map(b => b.date).filter(Boolean))].sort();
+        
+        // Add dates to filter
+        dates.forEach(date => {
+            const option = document.createElement('option');
+            option.value = date;
+            option.textContent = date;
+            dateFilter.appendChild(option);
+        });
+    }
+    
+    // ==================== EXPORT FUNCTIONS ====================
+    function exportBookingsCSV() {
+        const bookings = JSON.parse(localStorage.getItem('all_bookings') || '[]');
+        
+        if (bookings.length === 0) {
+            showAdminMessage('No bookings to export', 'error');
+            return;
+        }
+        
+        // Create CSV headers
+        let csv = 'ID,Timestamp,Username,Listings,Date,Time,Location,Type,Status\n';
+        
+        // Add rows
+        bookings.forEach(booking => {
+            const row = [
+                booking.id || '',
+                booking.timestamp || '',
+                `"${(booking.username || '').replace(/"/g, '""')}"`,
+                `"${(booking.listings || '').replace(/"/g, '""')}"`,
+                booking.date || '',
+                booking.time || '',
+                booking.location || '',
+                booking.type || '',
+                booking.status || ''
+            ];
+            
+            csv += row.join(',') + '\n';
+        });
+        
+        // Create download link
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `bookings_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showAdminMessage(`Exported ${bookings.length} bookings to CSV`, 'success');
+    }
+    
+    function exportBookingsJSON() {
+        const bookings = JSON.parse(localStorage.getItem('all_bookings') || '[]');
+        
+        if (bookings.length === 0) {
+            showAdminMessage('No bookings to export', 'error');
+            return;
+        }
+        
+        const dataStr = JSON.stringify(bookings, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `bookings_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showAdminMessage(`Exported ${bookings.length} bookings to JSON`, 'success');
+    }
+    
+    // ==================== UTILITY FUNCTIONS ====================
+    function setupAdminEventListeners() {
+        // Auto-load slots on page load
+        // Already handled in DOMContentLoaded
+    }
+    
+    function showAdminMessage(text, type = 'success') {
+        const messageDiv = document.getElementById('adminMessage');
+        if (!messageDiv) return;
+        
+        messageDiv.textContent = text;
+        messageDiv.className = `admin-message ${type}`;
+        messageDiv.style.display = 'block';
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 3000);
+    }
+    </script>
+</body>
+</html>
